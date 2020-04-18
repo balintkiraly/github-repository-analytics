@@ -1,10 +1,17 @@
-import express = require('express');
-const app: express.Application = express();
+import express, { Request, Response } from "express";
+import { routes } from "./routes";
+const app = express();
 
-app.get('/', function (req, res) {
-  res.send('Hello World!');
+routes.forEach(route => {
+  app[route.method](route.path, (request: Request, response: Response, next: Function) => {
+    try {
+      route.action(request, response, next);
+    } catch (error) {
+      throw new Error(error);
+    }
+  });
 });
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+app.listen(3000, () => {
+  console.log('App listening on port 3000!');
 });
